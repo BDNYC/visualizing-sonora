@@ -32,7 +32,7 @@ def long_plot(parameter_df, convolve_data_dict, x_min = 1.16, x_max = 1.185,
               x_increment = 0.005, const_spacing = 1.5, norm_scaling = 7e10,
               title = "Potassium Doublets", color_by_logg = True,
               left_labels = None, right_labels = None, left_label_title = None,
-              right_label_title = None, K_vertical_lines = False):
+              right_label_title = None, K_vertical_lines = False, stacked = False):
     """
     Plots normalized and convolved spectral data with annotations and color-coding.
     
@@ -82,13 +82,19 @@ def long_plot(parameter_df, convolve_data_dict, x_min = 1.16, x_max = 1.185,
     bottom_of_spectra = np.zeros(num_of_spectra) # max point in the spectra
 
 
-
-    if color_by_logg:
-        const = [(i*const_spacing) + 1.5*const_spacing*(i//5)
-                 for i in range(num_of_spectra)]  # constants to be added to flux
+    if stacked == False:
+        if color_by_logg:
+            const = [(i*const_spacing) + 1.5*const_spacing*(i//5)
+                    for i in range(num_of_spectra)]  # constants to be added to flux
+        else:
+            const = [(i*const_spacing) + 1.5*const_spacing*(i//6) 
+                    for i in range(num_of_spectra)] # constants to be added to flux
     else:
-        const = [(i*const_spacing) + 1.5*const_spacing*(i//6) 
-                 for i in range(num_of_spectra)] # constants to be added to flux
+        if color_by_logg:
+            const = [ const_spacing*(i//5)
+                    for i in range(num_of_spectra)]  # constants to be added to flux
+        else:
+            const = [const_spacing*(i//6) for i in range(num_of_spectra)] # constants to be added to flux
 
     fig, ax = plt.subplots(figsize=(6, 16))
 
@@ -129,13 +135,9 @@ def long_plot(parameter_df, convolve_data_dict, x_min = 1.16, x_max = 1.185,
                          xy=(x_max, label_loc_r[n]), xycoords='data', color=color)
 
 
-
-
-        
-
     # setting limits
-    y_max = max(top_of_spectra) + const_spacing
-    y_min =  min(bottom_of_spectra) - const_spacing / 2
+    y_max = max(top_of_spectra) + const_spacing/2
+    y_min =  min(bottom_of_spectra) - const_spacing / 4
     # limits in x and y
     ax.set_xlim(x_min, x_max)
     ax.set_ylim(y_min, y_max)
