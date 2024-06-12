@@ -12,17 +12,33 @@ logg_colors = pl.cm.plasma
 
 fsed_num = [1, 2, 3, 4, 8, 10]
 fsed_ticks = ["Cloudy", '2', '3', '4', '8', 'No \n Clouds']
-
+fsed_bounds = [0.5, 1.5, 2.5, 3.5, 6, 9, 11]
 
 logg_num = [3.5, 4, 4.5, 5, 5.5]
 logg_ticks = ['Less dense', '4', '4.5', '5', 'More dense']
+logg_bounds = [3.25, 3.75, 4.25, 4.75, 5.25, 5.75]
+
+norm_f = mpl.colors.BoundaryNorm(fsed_bounds, fsed_colors.N, extend='neither')
+norm_g = mpl.colors.BoundaryNorm(logg_bounds, logg_colors.N, extend='max')
 
 
-norm_g = mpl.colors.Normalize(vmin=min(logg_num)-.15,
-                              vmax=max(logg_num)+.12,  clip=True)
+def fsed_colorbar(fig, cax = None, ax = None, orientation='vertical',
+                   shrink=1.0, aspect=20, pad=.14):
 
-norm_f = mpl.colors.SymLogNorm(linthresh=4, vmin=min(fsed_num)-.15,
-                               vmax=max(fsed_num)+1, clip=True)
+    return fig.colorbar(pl.cm.ScalarMappable(norm=norm_f, cmap=fsed_colors),
+                cax=cax, ax = ax, orientation= orientation, 
+                ticks=fsed_num, format=mticker.FixedFormatter(fsed_ticks),
+                extend='neither', spacing='proportional',
+                shrink=shrink, aspect=aspect, pad=pad)
+    
+def logg_colorbar(fig, cax = None, ax = None, orientation='vertical',
+                  shrink=1.0, aspect=20, pad=.14):
+
+    return fig.colorbar(pl.cm.ScalarMappable(norm=norm_g, cmap=logg_colors),
+                cax=cax, ax = ax, orientation= orientation,
+                ticks=logg_num,  format=mticker.FixedFormatter(logg_ticks),
+                extend='neither', spacing='proportional',
+                shrink=shrink, aspect=aspect, pad=pad)
 
 
 
@@ -169,12 +185,12 @@ def long_plot(parameter_df, convolve_data_dict, x_min = 1.16, x_max = 1.185,
     # setting parameter labels
     ax.annotate(left_label_title, xy=(x_min, y_max),
                 ha='right',
-                va='top',
+                va='center',
                 xycoords='data', color='k')
     
     ax.annotate(right_label_title, xy=(x_max, y_max),
                 ha='left',
-                va='top',
+                va='center',
                 xycoords='data', color='k')
 
     # Adding potassium doublet vertical lines and annotations
@@ -218,19 +234,21 @@ def long_plot(parameter_df, convolve_data_dict, x_min = 1.16, x_max = 1.185,
     ax.hlines(hline_y, xmin=x_min + (x_max-x_min)/4, xmax=x_max,  color='k')
 
 
-    # color bar
+# color bar
     if color_by_logg:
-        axcb = fig.colorbar(mpl.cm.ScalarMappable(norm=norm_g, cmap=logg_colors),
-                            ticks=logg_num, shrink=1, format=mticker.FixedFormatter(logg_ticks),
-                            aspect=50,  pad=.14,  ax = ax)
+        # axcb = fig.colorbar(mpl.cm.ScalarMappable(norm=norm_g, cmap=logg_colors),
+        #                     ticks=logg_num, shrink=1, format=mticker.FixedFormatter(logg_ticks),
+        #                     aspect=50,  pad=.14)
+        axcb =logg_colorbar(fig, ax= ax, orientation='vertical', shrink=1, aspect=50, pad=.14,)
         axcb.set_label(' ', fontsize=12)  # empty label
         ax.annotate(r'$\log(g)$', xy=(.9, .5), xycoords='figure fraction',
                     rotation=270, fontsize=13)  # actual color bar label
 
     else:
-        axcb = fig.colorbar(mpl.cm.ScalarMappable(norm=norm_f, cmap=fsed_colors),
-                            ticks=fsed_num, shrink=1, format=mticker.FixedFormatter(fsed_ticks),
-                            aspect=50, pad=.14,  ax = ax)
+        # axcb = fig.colorbar(mpl.cm.ScalarMappable(norm=norm_f, cmap=fsed_colors),
+        #                     ticks=fsed_num, shrink=1, format=mticker.FixedFormatter(fsed_ticks),
+        #                     aspect=50, pad=.14)
+        axcb = fsed_colorbar(fig, ax=ax, orientation='vertical', shrink=1, aspect=50, pad=.14,)
         axcb.set_label(' ', fontsize=12)  # empty label
         ax.annotate(r'$f_{sed}$', xy=(.9, .5), xycoords='figure fraction',
                     rotation=270, fontsize=13)  # actual color bar label
