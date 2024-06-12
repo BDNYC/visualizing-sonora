@@ -208,7 +208,7 @@ def long_plot(parameter_df, convolve_data_dict, x_min = 1.16, x_max = 1.185,
     hline_y = []
     if color_by_logg:
         for i in range(1, 7):
-            hline_y.append(top_of_spectra[(i*5)-1] + const_spacing / 4)
+            hline_y.append(top_of_spectra[(i*5)-1] + const_spacing / 8)
 
         pretty_fsed = [' Cloudy \n $f_{sed} = 1$',
                     r' $f_{sed} = 2$', r' $f_{sed} = 3$',
@@ -220,7 +220,7 @@ def long_plot(parameter_df, convolve_data_dict, x_min = 1.16, x_max = 1.185,
                         xycoords='data', color='k', fontsize=9, va = 'center')
     else:
         for i in range(1, 6):
-            hline_y.append(top_of_spectra[(i*6)-1] + const_spacing / 4)
+            hline_y.append(top_of_spectra[(i*6)-1] + const_spacing / 8)
 
         pretty_logg = [' least dense\n'+r' $\log(g) = 3.5$',
                     r' $\log(g) = 4.0$', r' $\log(g) = 4.5$',
@@ -228,7 +228,7 @@ def long_plot(parameter_df, convolve_data_dict, x_min = 1.16, x_max = 1.185,
                     ' most dense \n' + r' $\log(g) = 5.5$']
         
         for i, y in enumerate(hline_y):
-            ax.annotate(pretty_logg[i], xy=(x_min + 0.0001, y - .1),
+            ax.annotate(pretty_logg[i], xy=(x_min + 0.0001, y),
                         xycoords='data', color='k', fontsize=9, va = 'center')
 
     ax.hlines(hline_y, xmin=x_min + (x_max-x_min)/4, xmax=x_max,  color='k')
